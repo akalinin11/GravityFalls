@@ -48,7 +48,7 @@ hamburguesaDeluxe = UnaComida{
 alex= UnaPersona{
   nombre = "Alexander"
 , direccion = "Queti 1600" 
-, dinero = 60000
+, dinero = 6000
 , comidaFavorita = hamburguesaDeluxe
 , cupones  = []
 } 
@@ -169,4 +169,4 @@ cantidadDeLetrasMenor:: Number->String->Bool
 cantidadDeLetrasMenor n  = (<n) . length 
 
 ------------PARTE C---------------
-            
+
