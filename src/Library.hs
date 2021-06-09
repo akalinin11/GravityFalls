@@ -57,16 +57,17 @@ alex= UnaPersona{
 papas = UnaComida{
   nombree = "papas"
 , costo = 10 
-, ingredientes = ["papas" ]
+, ingredientes = ["papas" , "carne", "lechuga" ]
 } 
 
 
 --Parte B
 
 --1)
+type Comprar= Persona->Persona
 
-comprar :: Persona->Comida->Persona
-comprar aPersona  aComida 
+comprar :: Comida->Comprar
+comprar aComida aPersona   
  | alcanzaPlata (dinero aPersona) (costo aComida) && seraNuevaComidaFavorita (costo aComida)  =  cambiarComidaYDescontar aComida aPersona (costo aComida)
  | alcanzaPlata (dinero aPersona) (costo aComida) =  descontarCosto aPersona (costo aComida)
  | otherwise = aPersona
@@ -88,11 +89,11 @@ nuevaComidaFav nuevaComida aPersona = aPersona{comidaFavorita= nuevaComida}
 
 --2)
 
-carritoDeCompras :: Persona->[Comida]->Persona
-carritoDeCompras aPersona  =  agregadoXEmpague 100 . realizarCompras aPersona
+carritoDeCompras :: [Comida]->Comprar
+carritoDeCompras  comidas   =  agregadoXEmpague 100 . flip realizarCompras comidas
 
 realizarCompras :: Persona->[Comida]->Persona
-realizarCompras aPersona = foldl (comprar) aPersona 
+realizarCompras aPersona = foldl (flip comprar) aPersona 
 
 agregadoXEmpague :: Number->Persona->Persona
 agregadoXEmpague  dineroExtra aPersona = aPersona{dinero= dinero aPersona - dineroExtra}
@@ -170,3 +171,39 @@ cantidadDeLetrasMenor n  = (<n) . length
 
 ------------PARTE C---------------
 
+utilizarCupon:: Cupon->Comida->Comida
+utilizarCupon cupon aComida = cupon aComida
+
+comprarConCupones :: Comida->[Cupon]-> Comprar
+comprarConCupones aComida cupones aPersona = flip comprar aPersona  (aplicarCuponesAComida aComida cupones)
+
+aplicarCuponesAComida :: Comida->[Cupon]->Comida
+aplicarCuponesAComida aComida  cupones = foldl ( flip utilizarCupon) aComida cupones
+
+--------------------------
+
+--superComida :: [Comida]->Comida
+--superComida comidas =  realizarCambiosSuperComida  
+
+
+--realizarCambiosSuperComida comidas =   (head comidas){nombree= modificarNombre comidas , costo= sumarTodosLosCostos  comidas, ingredientes = modificarIngredientes comidas }
+
+
+
+sumarTodosLosCostos :: [Comida]->Number
+sumarTodosLosCostos  = sum . map costo 
+
+--modificarNombre  
+
+--modificarIngredientes :: [Comida]->String
+modificarIngredientes  = sacarRepetidos . unirIngredientes
+
+unirIngredientes :: [Comida]->[String]
+unirIngredientes =  unirListas . map ingredientes 
+
+unirListas :: [[String]]->[String]
+unirListas listaDlistas = foldl1 (++) listaDlistas
+
+
+sacarRepetidos :: [String]->[String]
+sacarRepetidos  = nub 
